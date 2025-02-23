@@ -21,6 +21,7 @@ with Gathering_Data:
         ss.text("Dataset Geolocation")
         geolocation_df = pd.read_csv("olist_geolocation_dataset.csv", delimiter=",")    
         ss.dataframe(geolocation_df)
+        
 
 # Assessing Data section
 with Assessing_Data:
