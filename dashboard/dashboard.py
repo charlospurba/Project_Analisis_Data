@@ -22,6 +22,7 @@ with Gathering_Data:
         geolocation_df = pd.read_csv("../data/olist_geolocation_dataset.csv", delimiter=",")    
         ss.dataframe(geolocation_df)
 
+
 # Assessing Data section
 with Assessing_Data:
     tab1, tab2, tab3 = ss.tabs(["1", "2", "3"])
