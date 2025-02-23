@@ -40,6 +40,7 @@ with Assessing_Data:
         ss.subheader("Jumlah Nilai yang Hilang di Setiap Kolom:")
         ss.write(geolocation_df.isnull().sum())
 
+
 # Cleaning Data section
 with Cleaning_Data:
     tab1, tab2 = ss.tabs(["1", "2"])
