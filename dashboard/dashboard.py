@@ -7,6 +7,14 @@ from sklearn.cluster import KMeans
 ss.text("Nama: Charlos Pardomuan Purba")
 ss.title('Data Wrangling')
 
+# Upload files using Streamlit file uploader
+customers_df = pd.read_csv("data/olist_customers_dataset.csv", delimiter=",") 
+geolocation_df = pd.read_csv("data/olist_geolocation_dataset.csv", delimiter=",")
+
+# Filtering: User can select a province for analysis
+selected_state = ss.selectbox("Pilih Provinsi untuk Filter", customers_df['customer_state'].unique())
+filtered_by_state = customers_df[customers_df['customer_state'] == selected_state]
+
 # Tabs for different sections
 Gathering_Data, Assessing_Data, Cleaning_Data = ss.tabs(["Gathering Data", "Assessing Data", "Cleaning Data"])
 
@@ -15,11 +23,9 @@ with Gathering_Data:
     tab1, tab2 = ss.tabs(["1", "2"])
     with tab1:
         ss.text("Dataset Customers")
-        customers_df = pd.read_csv("data/olist_customers_dataset.csv", delimiter=",")    
-        ss.dataframe(customers_df)
+        ss.dataframe(filtered_by_state)
     with tab2:
         ss.text("Dataset Geolocation")
-        geolocation_df = pd.read_csv("data/olist_geolocation_dataset.csv", delimiter=",")    
         ss.dataframe(geolocation_df)
 
 # Assessing Data section
@@ -39,7 +45,6 @@ with Assessing_Data:
         ss.title("Analisis Data Lokasi")
         ss.subheader("Jumlah Nilai yang Hilang di Setiap Kolom:")
         ss.write(geolocation_df.isnull().sum())
-
 
 # Cleaning Data section
 with Cleaning_Data:
@@ -68,14 +73,23 @@ with Tab1:
     ss.dataframe(state_counts)
 
 with Tab2:
-    ss.title("Analisis Lokasi Pelanggan")
+    ss.title("Analisis Jumlah Pelanggan Berdasarkan Kota")
+    # Menghitung jumlah pelanggan berdasarkan kota
+    city_counts = customers_df.groupby('customer_city')['customer_id'].count()  # Pastikan 'customer_city' ada dalam dataset
+    ss.subheader("Jumlah Pelanggan per Kota:")
+    ss.dataframe(city_counts)
+
+    # Filter kota dengan jumlah pelanggan > 1000 (atau sesuai dengan batas yang diinginkan)
+    filtered_city_counts = city_counts[city_counts > 1000] 
+
+    # Visualisasi Jumlah Pelanggan Berdasarkan Kota
     plt.figure(figsize=(12, 8))
-    plt.scatter(geolocation_df['geolocation_lng'], geolocation_df['geolocation_lat'],
-                c='blue', alpha=0.5, edgecolors='w', s=10)
-    plt.title('Distribusi Lokasi Pelanggan')
-    plt.xlabel('Longitude')
-    plt.ylabel('Latitude')
-    plt.grid(True)
+    filtered_city_counts.plot(kind='bar', color='skyblue', width=0.8)  # Menyesuaikan lebar bar
+    plt.title('Jumlah Pelanggan Berdasarkan Kota')
+    plt.xlabel('Kota')
+    plt.ylabel('Jumlah Pelanggan')
+    plt.xticks(rotation=45, ha='right')  # Memutar label agar lebih terbaca
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
     ss.pyplot(plt)
 
 with Tab3:
@@ -86,7 +100,7 @@ with Tab3:
 
 # Visualization & Explanatory Analysis
 ss.title("Visualization & Explanatory Analysis")
-Pertanyaan1, Pertanyaan2 = ss.tabs(['Distribusi Pelanggan per Provinsi', 'Distribusi Lokasi Pelanggan'])
+Pertanyaan1, Pertanyaan2 = ss.tabs(['Distribusi Pelanggan per Provinsi', 'Distribusi Pelanggan per kota'])
 
 with Pertanyaan1:
     ss.title("Distribusi Pelanggan per Provinsi")
@@ -101,14 +115,16 @@ with Pertanyaan1:
     ss.pyplot(plt)
 
 with Pertanyaan2:
-    ss.title("Distribusi Lokasi Pelanggan")
+    ss.title("Distribusi Jumlah Pelanggan Berdasarkan Kota")
+    city_counts = customers_df.groupby('customer_city')['customer_id'].count()
+    filtered_city_counts = city_counts[city_counts > 1000]  # Hanya menampilkan kota dengan lebih dari 1000 pelanggan
     plt.figure(figsize=(12, 8))
-    plt.scatter(geolocation_df['geolocation_lng'], geolocation_df['geolocation_lat'],
-                c='blue', alpha=0.5, edgecolors='w', s=10)
-    plt.title('Distribusi Lokasi Pelanggan')
-    plt.xlabel('Longitude')
-    plt.ylabel('Latitude')
-    plt.grid(True)
+    filtered_city_counts.plot(kind='bar', color='skyblue')
+    plt.title('Jumlah Pelanggan Berdasarkan Kota')
+    plt.xlabel('Kota')
+    plt.ylabel('Jumlah Pelanggan')
+    plt.xticks(rotation=45)
+    plt.grid(axis='y')
     ss.pyplot(plt)
 
 # Advanced Analysis (Geospatial & Clustering)
@@ -150,7 +166,7 @@ with ss.expander("Conclusion"):
     ss.write(
         """Kesimpulan:
         1. Analisis pelanggan berdasarkan provinsi menunjukkan bahwa wilayah seperti São Paulo memiliki konsentrasi pelanggan yang lebih tinggi.
-        2.  Penyebaran lokasi pelanggan menunjukkan konsentrasi utama di beberapa kota besar, seperti São Paulo.
-        3.  Clustering geospatial membantu mengidentifikasi pola distribusi pelanggan yang lebih terfokus di beberapa wilayah.
+        2. Penyebaran lokasi pelanggan menunjukkan konsentrasi utama di beberapa kota besar, seperti São Paulo.
+        3. Clustering geospatial membantu mengidentifikasi pola distribusi pelanggan yang lebih terfokus di beberapa wilayah.
         """
     )
