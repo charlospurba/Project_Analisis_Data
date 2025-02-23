@@ -15,11 +15,11 @@ with Gathering_Data:
     tab1, tab2 = ss.tabs(["1", "2"])
     with tab1:
         ss.text("Dataset Customers")
-        customers_df = pd.read_csv("../data/olist_customers_dataset.csv", delimiter=",")    
+        customers_df = pd.read_csv("data/olist_customers_dataset.csv", delimiter=",")    
         ss.dataframe(customers_df)
     with tab2:
         ss.text("Dataset Geolocation")
-        geolocation_df = pd.read_csv("../data/olist_geolocation_dataset.csv", delimiter=",")    
+        geolocation_df = pd.read_csv("data/olist_geolocation_dataset.csv", delimiter=",")    
         ss.dataframe(geolocation_df)
 
 
