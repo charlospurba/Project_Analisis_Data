@@ -3,13 +3,14 @@ import streamlit as ss
 import pandas as pd
 from sklearn.cluster import KMeans
 import streamlit as st
+import mplcursors
 
 # sidebar
 ss.text("Nama: Charlos Pardomuan Purba")
 ss.title('Data Wrangling')
 
-customers_df = pd.read_csv("data/olist_customers_dataset.csv", delimiter=",") 
-geolocation_df = pd.read_csv("data/olist_geolocation_dataset.csv", delimiter=",")
+customers_df = pd.read_csv("../data/olist_customers_dataset.csv", delimiter=",") 
+geolocation_df = pd.read_csv("../data/olist_geolocation_dataset.csv", delimiter=",")
 
 # Filtering: User can select a province for analysis
 selected_state = ss.selectbox("Pilih Provinsi untuk Filter", customers_df['customer_state'].unique())
@@ -110,14 +111,22 @@ with Pertanyaan1:
     top_10_state_counts = state_counts.sort_values(ascending=False).head(10)
     
     plt.figure(figsize=(10, 6))
-    top_10_state_counts.plot(kind='bar', color='skyblue')
+    bars = plt.bar(top_10_state_counts.index, top_10_state_counts.values, color='skyblue')
+    
     plt.title('10 Provinsi dengan Jumlah Pelanggan Terbanyak')
     plt.xlabel('Provinsi')
     plt.ylabel('Jumlah Pelanggan')
     plt.xticks(rotation=45)
     plt.grid(axis='y')
+    
+    # Menambahkan label jumlah pelanggan pada setiap batang
+    for bar in bars:
+        yval = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width() / 2, yval, f'{int(yval)}', ha='center', va='bottom')
+
     ss.pyplot(plt)
 
+# Pertanyaan 2: Distribusi Jumlah Pelanggan Berdasarkan Kota
 with Pertanyaan2:
     ss.title("Distribusi Jumlah Pelanggan Berdasarkan Kota")
     city_counts = customers_df.groupby('customer_city')['customer_id'].count()
@@ -129,13 +138,21 @@ with Pertanyaan2:
     top_10_city_counts = filtered_city_counts.sort_values(ascending=False).head(10)
     
     plt.figure(figsize=(12, 8))
-    top_10_city_counts.plot(kind='bar', color='skyblue')
+    bars = plt.bar(top_10_city_counts.index, top_10_city_counts.values, color='skyblue')
+    
     plt.title('10 Kota dengan Jumlah Pelanggan Terbanyak')
     plt.xlabel('Kota')
     plt.ylabel('Jumlah Pelanggan')
     plt.xticks(rotation=45)
     plt.grid(axis='y')
+    
+    # Menambahkan label jumlah pelanggan pada setiap batang
+    for bar in bars:
+        yval = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width() / 2, yval, f'{int(yval)}', ha='center', va='bottom')
+
     ss.pyplot(plt)
+
 
 # Advanced Analysis (Geospatial & Clustering)
 ss.title("Analisis Lanjutan")
