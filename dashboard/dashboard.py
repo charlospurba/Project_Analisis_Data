@@ -9,8 +9,8 @@ import mplcursors
 ss.text("Nama: Charlos Pardomuan Purba")
 ss.title('Data Wrangling')
 
-customers_df = pd.read_csv("../data/olist_customers_dataset.csv", delimiter=",") 
-geolocation_df = pd.read_csv("../data/olist_geolocation_dataset.csv", delimiter=",")
+customers_df = pd.read_csv("data/olist_customers_dataset.csv", delimiter=",") 
+geolocation_df = pd.read_csv("data/olist_geolocation_dataset.csv", delimiter=",")
 
 # Filtering: User can select a province for analysis
 selected_state = ss.selectbox("Pilih Provinsi untuk Filter", customers_df['customer_state'].unique())
