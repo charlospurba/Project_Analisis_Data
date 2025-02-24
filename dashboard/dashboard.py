@@ -7,8 +7,8 @@ from sklearn.cluster import KMeans
 ss.text("Nama: Charlos Pardomuan Purba")
 ss.title('Data Wrangling')
 
-customers_df = pd.read_csv("data/olist_customers_dataset.csv", delimiter=",") 
-geolocation_df = pd.read_csv("data/olist_geolocation_dataset.csv", delimiter=",")
+customers_df = pd.read_csv("../data/olist_customers_dataset.csv", delimiter=",") 
+geolocation_df = pd.read_csv("../data/olist_geolocation_dataset.csv", delimiter=",")
 
 # Filtering: User can select a province for analysis
 selected_state = ss.selectbox("Pilih Provinsi untuk Filter", customers_df['customer_state'].unique())
@@ -128,8 +128,11 @@ with Pertanyaan2:
 
 # Advanced Analysis (Geospatial & Clustering)
 ss.title("Analisis Lanjutan")
+
+# Membuat tab untuk analisis geospatial dan clustering
 Geospatial_Analysis, Clustering = ss.tabs(["Geospatial Analysis", "Clustering"])
 
+# Geospatial Analysis
 with Geospatial_Analysis:
     ss.title("Distribusi Pelanggan Berdasarkan Lokasi")
     plt.figure(figsize=(12, 8))
@@ -141,20 +144,22 @@ with Geospatial_Analysis:
     plt.grid(True)
     ss.pyplot(plt)
 
+# Clustering Analysis
 with Clustering:
     ss.title("Analisis Clustering Berdasarkan Lokasi Pelanggan")
     
     # Sample data for clustering to avoid memory issues
     geolocation_sample = geolocation_df.sample(1000)
     
-    # KMeans clustering
-    kmeans = KMeans(n_clusters=5, random_state=42)
-    geolocation_sample['Cluster'] = kmeans.fit_predict(geolocation_sample[['geolocation_lat', 'geolocation_lng']])
+    # DBSCAN clustering (as per original code)
+    from sklearn.cluster import DBSCAN
+    dbscan = DBSCAN(eps=0.1, min_samples=10)
+    geolocation_sample['Cluster'] = dbscan.fit_predict(geolocation_sample[['geolocation_lat', 'geolocation_lng']])
     
     plt.figure(figsize=(12, 8))
     plt.scatter(geolocation_sample['geolocation_lng'], geolocation_sample['geolocation_lat'],
-                c=geolocation_sample['Cluster'], cmap='viridis', alpha=0.6)
-    plt.title('Clustered Locations of Customers')
+                c=geolocation_sample['Cluster'], cmap='viridis', alpha=0.6, edgecolors='w', s=100)
+    plt.title('Clustering Pelanggan Berdasarkan Lokasi Geografis menggunakan DBSCAN')
     plt.xlabel('Longitude')
     plt.ylabel('Latitude')
     plt.colorbar(label='Cluster')
@@ -164,8 +169,7 @@ with Clustering:
 with ss.expander("Conclusion"):
     ss.write(
         """Kesimpulan:
-        1. Analisis pelanggan berdasarkan provinsi menunjukkan bahwa wilayah seperti São Paulo memiliki konsentrasi pelanggan yang lebih tinggi.
-        2. Penyebaran lokasi pelanggan menunjukkan konsentrasi utama di beberapa kota besar, seperti São Paulo.
-        3. Clustering geospatial membantu mengidentifikasi pola distribusi pelanggan yang lebih terfokus di beberapa wilayah.
+        Kesimpulan Pertanyaan 1: Provinsi dan kota São Paulo memiliki jumlah pelanggan yang jauh lebih besar dibandingkan provinsi dan kota lainnya, dengan lebih dari 40,000 pelanggan. Ini menjadikannya pusat utama bagi bisnis ini. Pelanggan tersebar di berbagai provinsi dan kota di Brasil, dengan konsentrasi tertinggi di São Paulo. Hal ini menunjukkan adanya peluang untuk memperluas jangkauan ke daerah lain.
+        Kesimpulan Pertanyaan 2: Kota-kota besar seperti Rio de Janeiro, Belo Horizonte, dan Brasília memiliki pelanggan dalam kisaran 1,000 hingga 5,000. Meskipun lebih rendah, kota-kota ini masih memiliki potensi pasar yang signifikan.
         """
     )
