@@ -7,8 +7,8 @@ from sklearn.cluster import KMeans
 ss.text("Nama: Charlos Pardomuan Purba")
 ss.title('Data Wrangling')
 
-customers_df = pd.read_csv("data/olist_customers_dataset.csv", delimiter=",") 
-geolocation_df = pd.read_csv("data/olist_geolocation_dataset.csv", delimiter=",")
+customers_df = pd.read_csv("../data/olist_customers_dataset.csv", delimiter=",") 
+geolocation_df = pd.read_csv("../data/olist_geolocation_dataset.csv", delimiter=",")
 
 # Filtering: User can select a province for analysis
 selected_state = ss.selectbox("Pilih Provinsi untuk Filter", customers_df['customer_state'].unique())
@@ -99,14 +99,18 @@ with Tab3:
 
 # Visualization & Explanatory Analysis
 ss.title("Visualization & Explanatory Analysis")
-Pertanyaan1, Pertanyaan2 = ss.tabs(['Distribusi Pelanggan per Provinsi', 'Distribusi Pelanggan per kota'])
+Pertanyaan1, Pertanyaan2 = ss.tabs(['Distribusi Pelanggan per Provinsi', 'Distribusi Pelanggan per Kota'])
 
 with Pertanyaan1:
     ss.title("Distribusi Pelanggan per Provinsi")
     state_counts = customers_df.groupby('customer_state')['customer_id'].count()
+    
+    # Mengurutkan jumlah pelanggan dan menampilkan 10 provinsi teratas
+    top_10_state_counts = state_counts.sort_values(ascending=False).head(10)
+    
     plt.figure(figsize=(10, 6))
-    state_counts.plot(kind='bar', color='skyblue')
-    plt.title('Jumlah Pelanggan Berdasarkan Provinsi')
+    top_10_state_counts.plot(kind='bar', color='skyblue')
+    plt.title('10 Provinsi dengan Jumlah Pelanggan Terbanyak')
     plt.xlabel('Provinsi')
     plt.ylabel('Jumlah Pelanggan')
     plt.xticks(rotation=45)
@@ -116,10 +120,16 @@ with Pertanyaan1:
 with Pertanyaan2:
     ss.title("Distribusi Jumlah Pelanggan Berdasarkan Kota")
     city_counts = customers_df.groupby('customer_city')['customer_id'].count()
-    filtered_city_counts = city_counts[city_counts > 1000]  # Hanya menampilkan kota dengan lebih dari 1000 pelanggan
+    
+    # Menyaring kota dengan lebih dari 1000 pelanggan
+    filtered_city_counts = city_counts[city_counts > 1000]
+    
+    # Mengurutkan kota berdasarkan jumlah pelanggan dan menampilkan 10 kota teratas
+    top_10_city_counts = filtered_city_counts.sort_values(ascending=False).head(10)
+    
     plt.figure(figsize=(12, 8))
-    filtered_city_counts.plot(kind='bar', color='skyblue')
-    plt.title('Jumlah Pelanggan Berdasarkan Kota')
+    top_10_city_counts.plot(kind='bar', color='skyblue')
+    plt.title('10 Kota dengan Jumlah Pelanggan Terbanyak')
     plt.xlabel('Kota')
     plt.ylabel('Jumlah Pelanggan')
     plt.xticks(rotation=45)
